@@ -9,13 +9,13 @@ from discord.ext import commands
 from config import config as lc_config
 
 bot = commands.Bot(
-    bh_config["command_prefix"],
+    lc_config["command_prefix"],
     description="/r/gtaonline's moderation bot using Banhammer.py.")
 
 bh = banhammer.Banhammer(
     apraw.Reddit("LCB"),
     bot=bot,
-    change_presence=bh_config["change_presence"])
+    change_presence=lc_config["change_presence"])
 
 
 @bot.event
@@ -27,7 +27,7 @@ async def on_command_error(ctx, error):
 async def on_ready():
     print(str(bot.user) + ' is running.')
 
-    for sub in bh_config["subreddits"]:
+    for sub in lc_config["subreddits"]:
         s = Subreddit(bh, **sub)
         await s.load_reactions()
         await bh.add_subreddits(s)
@@ -47,42 +47,42 @@ async def reactions(ctx):
 
 @bh.new()
 async def handle_new(p):
-    msg = await bot.get_channel(bh_config["new_channel"]).send(embed=await p.get_embed())
+    msg = await bot.get_channel(lc_config["new_channel"]).send(embed=await p.get_embed())
     for react in p.get_reactions():
         await msg.add_reaction(react.emoji)
 
 
 @bh.comments()
 async def handle_comments(p):
-    msg = await bot.get_channel(bh_config["comments_channel"]).send(embed=await p.get_embed())
+    msg = await bot.get_channel(lc_config["comments_channel"]).send(embed=await p.get_embed())
     for react in p.get_reactions():
         await msg.add_reaction(react.emoji)
 
 
 @bh.mail()
 async def handle_mail(p):
-    msg = await bot.get_channel(bh_config["mail_channel"]).send(embed=await p.get_embed())
+    msg = await bot.get_channel(lc_config["mail_channel"]).send(embed=await p.get_embed())
     for react in p.get_reactions():
         await msg.add_reaction(react.emoji)
 
 
 @bh.queue()
 async def handle_queue(p):
-    msg = await bot.get_channel(bh_config["queue_channel"]).send(embed=await p.get_embed())
+    msg = await bot.get_channel(lc_config["queue_channel"]).send(embed=await p.get_embed())
     for react in p.get_reactions():
         await msg.add_reaction(react.emoji)
 
 
 @bh.reports()
 async def handle_reports(p):
-    msg = await bot.get_channel(bh_config["reports_channel"]).send(embed=await p.get_embed())
+    msg = await bot.get_channel(lc_config["reports_channel"]).send(embed=await p.get_embed())
     for react in p.get_reactions():
         await msg.add_reaction(react.emoji)
 
 
 @bh.mod_actions()
 async def handle_actions(p):
-    msg = await bot.get_channel(bh_config["actions_channel"]).send(embed=await p.get_embed())
+    msg = await bot.get_channel(lc_config["actions_channel"]).send(embed=await p.get_embed())
     for react in p.get_reactions():
         await msg.add_reaction(react.emoji)
 
