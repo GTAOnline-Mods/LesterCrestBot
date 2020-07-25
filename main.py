@@ -7,6 +7,7 @@ import discord
 from banhammer.models import Subreddit
 from discord.ext import commands
 
+from cmds import HelpCommand
 from config import config as lc_config
 
 logger = logging.getLogger("banhammer")
@@ -17,7 +18,8 @@ logger.addHandler(fileHandle)
 
 bot = commands.Bot(
     lc_config["command_prefix"],
-    description="/r/gtaonline's moderation bot using Banhammer.py.")
+    description="/r/gtaonline's moderation bot using Banhammer.py.",
+    help_command=HelpCommand(discord.Colour(0).from_rgb(207, 226, 206)))
 
 bh = banhammer.Banhammer(
     apraw.Reddit("LCB"),
