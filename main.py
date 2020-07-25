@@ -42,6 +42,9 @@ async def on_ready():
         await s.load_reactions()
         await bh.add_subreddits(s)
 
+    message = await bot.fetch_message(736613065889546321)
+    await message.edit(embed=bh.get_subreddits_embed())
+
     bh.run()
 
 
@@ -51,6 +54,9 @@ async def reload(ctx):
     for sub in bh.subreddits:
         await sub.load_reactions()
     await ctx.send("Reloaded all subreddit reactions!", delete_after=3)
+
+    message = await bot.fetch_message(736613065889546321)
+    await message.edit(embed=bh.get_subreddits_embed())
 
 
 @bot.command()
