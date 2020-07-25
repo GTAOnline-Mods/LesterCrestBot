@@ -1,4 +1,5 @@
 import configparser
+import logging
 
 import apraw
 import banhammer
@@ -7,6 +8,10 @@ from banhammer.models import Subreddit
 from discord.ext import commands
 
 from config import config as lc_config
+
+logger = logging.getLogger("banhammer")
+fileHandle = logging.FileHandler('banhammer.log')
+logger.addHandler(fileHandle)
 
 bot = commands.Bot(
     lc_config["command_prefix"],
