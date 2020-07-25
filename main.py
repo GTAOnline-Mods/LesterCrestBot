@@ -115,11 +115,15 @@ async def on_raw_reaction_add(p):
     m = await c.fetch_message(p.message_id)
     e = p.emoji.name if not p.emoji.is_custom_emoji() else f"<:{p.emoji.name}:{p.emoji.id}>"
 
-    item = await bh.get_item(m.embeds[0] if not m.embeds else m.content)
+    item = await bh.get_item(m.embeds[0] if m.embeds else m.content)
     if not item:
         return
 
-    result = await item.get_reaction(e).handle(item, user=u.nick)
+    reaction = item.get_reaction(e)
+    if not reaction:
+        return
+
+    result = await reaction.handle(item, user=u.nick)
     channel = bot.get_channel(lc_config["approved_channel"] if result.approved else lc_config["removed_channel"])
     await channel.send(await result.get_message())
 
