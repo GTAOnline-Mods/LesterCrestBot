@@ -81,7 +81,7 @@ async def handle_new(p):
 @bh.comments()
 async def handle_comments(p):
     author_name = await p.get_author_name()
-    if author_name.lower() == "AutoModerator".lower():
+    if author_name.lower() in ["automoderator", "lestercrestbot"]:
         return
     msg = await bot.get_channel(lc_config["comments_channel"]).send(embed=await p.get_embed())
     for react in p.get_reactions():
