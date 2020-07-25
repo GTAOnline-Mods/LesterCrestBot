@@ -11,6 +11,8 @@ from config import config as lc_config
 
 logger = logging.getLogger("banhammer")
 fileHandle = logging.FileHandler('banhammer.log')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fileHandle.setFormatter(formatter)
 logger.addHandler(fileHandle)
 
 bot = commands.Bot(
