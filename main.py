@@ -46,6 +46,14 @@ async def on_ready():
 
 
 @bot.command()
+async def reload(ctx):
+    await ctx.message.delete()
+    for sub in bh.subreddits:
+        await sub.load_reactions()
+    await ctx.send("Reloaded all subreddit reactions!", delete_after=3)
+
+
+@bot.command()
 async def subreddits(ctx):
     await ctx.send(embed=bh.get_subreddits_embed())
 
