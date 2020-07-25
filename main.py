@@ -15,7 +15,8 @@ bot = commands.Bot(
 bh = banhammer.Banhammer(
     apraw.Reddit("LCB"),
     bot=bot,
-    change_presence=lc_config["change_presence"])
+    change_presence=lc_config["change_presence"],
+    embed_color=discord.Colour(0).from_rgb(207, 226, 206))
 
 
 @bot.event
