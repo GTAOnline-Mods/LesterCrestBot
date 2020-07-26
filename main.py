@@ -154,7 +154,7 @@ async def on_raw_reaction_add(p):
 
     result = await reaction.handle(item, user=u.nick)
     channel = bot.get_channel(lc_config["approved_channel"] if result.approved else lc_config["removed_channel"])
-    await channel.send(await result.get_message())
+    await channel.send(embed=await result.get_embed())
 
     await m.delete()
 
