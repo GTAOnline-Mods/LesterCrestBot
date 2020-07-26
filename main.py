@@ -11,10 +11,13 @@ from cmds import HelpCommand
 from config import config as lc_config
 
 logger = logging.getLogger("banhammer")
+
+formatter = logging.Formatter(u'%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 fileHandle = logging.FileHandler('banhammer.log')
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 fileHandle.setFormatter(formatter)
 logger.addHandler(fileHandle)
+
 
 bot = commands.Bot(
     lc_config["command_prefix"],
