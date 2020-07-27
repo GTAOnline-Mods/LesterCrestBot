@@ -9,6 +9,7 @@ from discord.ext import commands
 
 from cmds import HelpCommand
 from config import config as lc_config
+from helpers import MessageBuilder
 
 logger = logging.getLogger("banhammer")
 
@@ -19,17 +20,19 @@ fileHandle = logging.FileHandler('banhammer.log')
 fileHandle.setFormatter(formatter)
 logger.addHandler(fileHandle)
 
+gta_green = discord.Colour(0).from_rgb(207, 226, 206)
 
 bot = commands.Bot(
     lc_config["command_prefix"],
     description="/r/gtaonline's moderation bot using Banhammer.py.",
-    help_command=HelpCommand(discord.Colour(0).from_rgb(207, 226, 206)))
+    help_command=HelpCommand(gta_green))
 
 bh = banhammer.Banhammer(
     apraw.Reddit("LCB"),
     bot=bot,
     change_presence=lc_config["change_presence"],
-    embed_color=discord.Colour(0).from_rgb(207, 226, 206))
+    embed_color=gta_green,
+    message_builder=MessageBuilder())
 
 
 @bot.event
