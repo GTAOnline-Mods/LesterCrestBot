@@ -19,7 +19,7 @@ class MessageBuilder(MessageBuilder):
                 value=discord.utils.escape_markdown(item.item.title),
                 inline=False)
             if "i.redd.it" in item.item.url:
-                embed.set_image(item.item.url)
+                embed.set_image(url=item.item.url)
             else:
                 embed.add_field(
                     name="URL",
