@@ -19,7 +19,7 @@ class MessageBuilder(MessageBuilder):
                 value=discord.utils.escape_markdown(item.item.title),
                 inline=False)
             if "i.redd.it" in item.item.url:
-                embed.image.url = item.item.url
+                embed.set_image(item.item.url)
             else:
                 embed.add_field(
                     name="URL",
@@ -32,4 +32,4 @@ class MessageBuilder(MessageBuilder):
                     inline=False)
             return embed
         else:
-            return super().get_item_embed(item, embed_color=embed_color)
+            return await super().get_item_embed(item, embed_color=embed_color)
