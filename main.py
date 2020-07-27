@@ -15,9 +15,9 @@ logger = logging.getLogger("banhammer")
 
 formatter = logging.Formatter(u'%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-# use StreamHandler for console output
 fileHandle = logging.FileHandler('banhammer.log')
 fileHandle.setFormatter(formatter)
+fileHandle.setLevel(logging.WARNING)
 logger.addHandler(fileHandle)
 
 gta_green = discord.Colour(0).from_rgb(207, 226, 206)
