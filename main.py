@@ -1,5 +1,7 @@
 import configparser
 import logging
+import os
+import pickle
 from datetime import datetime
 
 import apraw
@@ -193,13 +195,20 @@ async def on_raw_reaction_add(p):
     if not reaction:
         return
 
-    try:
-        await m.delete()
-        result = await reaction.handle(item, user=u.nick)
-        channel = bot.get_channel(lc_config["approved_channel"] if result.approved else lc_config["removed_channel"])
-        await channel.send(embed=await result.get_embed())
-    except Exception as e:
-        print(e)
+    await m.delete()
+    result = await reaction.handle(item, user=u.nick)
+    channel = bot.get_channel(lc_config["approved_channel"] if result.approved else lc_config["removed_channel"])
+    await channel.send(embed=await result.get_embed())
+
+    with open(lc_config["payloads_file"], "ab+") as f:
+        pickle.dump({
+            "item": result.item.url,
+            "user": result.user,
+            "actions": result.actions,
+            "approved": result.approved,
+            "reply": result.reply,
+            "emoji": result.emoji
+        }, f)
 
 
 config = configparser.ConfigParser()
