@@ -1,5 +1,6 @@
 import configparser
 import logging
+from datetime import datetime
 
 import apraw
 import banhammer
@@ -35,9 +36,44 @@ bh = banhammer.Banhammer(
     message_builder=MessageBuilder())
 
 
+def get_embed():
+    embed = discord.Embed(colour=gta_green)
+    embed.set_footer(text="Lester Crest Bot", icon_url=bot.user.avatar_url)
+    embed.timestamp = datetime.now()
+    return embed
+
+
+async def get_reactions_embed():
+    embed = get_embed()
+
+    for sub in bh.subreddits:
+        subreddit = await sub.get_subreddit()
+        embed.set_author(
+            name=f"/r/{sub} Configured Reactions",
+            url=f"https://www.reddit.com/r/{sub}/wiki/banhammer-reactions",
+            icon_url=subreddit.community_icon)
+        fields = list()
+        for reaction in sub.reactions:
+            text = repr(reaction).replace(str(reaction) + " | ", "")
+            if reaction.reply:
+                text.replace(" | reply", "")
+                text += f"\n\n**Reply**\n>>> {reaction.reply}"
+                fields.append({"name": str(reaction), "value": text})
+            else:
+                fields = [{"name": str(reaction), "value": text}, *fields]
+        for field in fields:
+            embed.add_field(**field)
+        break
+
+    return embed
+
+
 @bot.event
 async def on_command_error(ctx, error):
-    print(error)
+    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+        pass
+    else:
+        print(error)
 
 
 @bot.event
@@ -51,7 +87,7 @@ async def on_ready():
 
     channel = bot.get_channel(734713971428425729)
     message = await channel.fetch_message(736613065889546321)
-    await message.edit(embed=bh.get_reactions_embed())
+    await message.edit(embed=await get_reactions_embed())
 
     bh.run()
 
@@ -65,7 +101,7 @@ async def reload(ctx):
 
     channel = bot.get_channel(734713971428425729)
     message = await channel.fetch_message(736613065889546321)
-    await message.edit(embed=bh.get_reactions_embed())
+    await message.edit(embed=await get_reactions_embed())
 
 
 @bot.command()
