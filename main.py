@@ -140,6 +140,8 @@ async def on_raw_reaction_add(p):
     u = c.guild.get_member(p.user_id)
     if u.bot:
         return
+    if not any(role.id == 734714209342062602 for role in u.roles):
+        return
 
     m = await c.fetch_message(p.message_id)
     e = p.emoji.name if not p.emoji.is_custom_emoji() else f"<:{p.emoji.name}:{p.emoji.id}>"
