@@ -83,7 +83,7 @@ class LesterCrest(Bot, Banhammer):
             return
 
         m = await c.fetch_message(payload.message_id)
-        e = payload.emoji.is_custom_emoji() and payload.emoji.name or f"<:{payload.emoji.name}:{payload.emoji.id}>"
+        e = payload.emoji.is_custom_emoji() and f"<:{payload.emoji.name}:{payload.emoji.id}>" or payload.emoji.name
 
         item = await self.get_item(m.embeds[0] if m.embeds else m.content)
         if not item:
