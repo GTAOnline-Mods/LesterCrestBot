@@ -8,7 +8,7 @@ import apraw
 import banhammer
 import discord
 from banhammer import Banhammer
-from banhammer.models import RedditItem, Subreddit
+from banhammer.models import EventHandler, ItemAttribute, RedditItem, Subreddit
 from discord.ext import commands
 from discord.ext.commands import Bot
 
@@ -54,7 +54,7 @@ class LesterCrest(Bot, Banhammer):
         message = await channel.fetch_message(736613065889546321)
 
         for sub in self.subreddits:
-            embed = await sub.get_reactions_embed(embed_template=lester.embed)
+            embed = await sub.get_reactions_embed(embed_template=self.embed)
             await message.edit(embed=embed)
             break
 
@@ -80,8 +80,7 @@ class LesterCrest(Bot, Banhammer):
             return
 
         m = await c.fetch_message(payload.message_id)
-        e = payload.emoji.name if not payload.emoji.is_custom_emoji(
-        ) else f"<:{payload.emoji.name}:{payload.emoji.id}>"
+        e = payload.emoji.is_custom_emoji() and payload.emoji.name or f"<:{payload.emoji.name}:{payload.emoji.id}>"
 
         item = await self.get_item(m.embeds[0] if m.embeds else m.content)
         if not item:
@@ -99,27 +98,17 @@ class LesterCrest(Bot, Banhammer):
         with open(lc_config["payloads_file"], "ab+") as f:
             pickle.dump(result.to_dict(), f)
 
-    @commands.command()
+    @commands.command(help="Reload all the reactions for the subreddit configured and create a new info embed.")
     async def reload(self, ctx: commands.Context):
         await ctx.message.delete()
-        for sub in self.subreddits:
-            await sub.load_reactions()
-        await ctx.send("Reloaded all subreddit reactions!", delete_after=3)
 
         channel = self.get_channel(734713971428425729)
         message = await channel.fetch_message(736613065889546321)
         for sub in self.subreddits:
+            await sub.load_reactions()
             embed = await sub.get_reactions_embed(embed_template=self.embed)
             await message.edit(embed=embed)
-            break
-
-    @commands.command()
-    async def subreddits(self, ctx: commands.Context):
-        await ctx.send(embed=self.get_subreddits_embed(embed_template=self.embed))
-
-    @commands.command()
-    async def reactions(self, ctx: commands.Context):
-        await ctx.send(embed=self.get_reactions_embed(embed_template=self.embed))
+        await ctx.send("Reloaded all subreddit reactions!", delete_after=3)
 
     @property
     def embed(self):
@@ -128,48 +117,41 @@ class LesterCrest(Bot, Banhammer):
         embed.timestamp = datetime.now()
         return embed
 
+    @EventHandler.new()
+    async def handle_new(self, item: RedditItem):
+        embed = await item.get_embed(embed_template=self.embed)
+        msg = await self.get_channel(lc_config["new_channel"]).send(embed=embed)
+        await item.add_reactions(msg)
 
-lester = LesterCrest()
+    @EventHandler.comments()
+    @EventHandler.filter(ItemAttribute.AUTHOR, "automoderator", "lestercrestbot", reverse=True)
+    async def handle_comments(self, item: RedditItem):
+        author_name = await item.get_author_name()
+        embed = await item.get_embed(embed_template=self.embed)
+        msg = await self.get_channel(lc_config["comments_channel"]).send(embed=embed)
+        await item.add_reactions(msg)
 
+    @EventHandler.mail()
+    async def handle_mail(self, item: RedditItem):
+        embed = await item.get_embed(embed_template=self.embed)
+        msg = await self.get_channel(lc_config["mail_channel"]).send(embed=embed)
+        await item.add_reactions(msg)
 
-@lester.new()
-async def handle_new(item: RedditItem):
-    embed = await item.get_embed(embed_template=lester.embed)
-    msg = await lester.get_channel(lc_config["new_channel"]).send(embed=embed)
-    await item.add_reactions(msg)
+    @EventHandler.reports()
+    async def handle_reports(self, item: RedditItem):
+        embed = await item.get_embed(embed_template=self.embed)
+        msg = await self.get_channel(lc_config["reports_channel"]).send(embed=embed)
+        await item.add_reactions(msg)
 
-
-@lester.comments()
-async def handle_comments(item: RedditItem):
-    author_name = await item.get_author_name()
-    if author_name.lower() in ["automoderator", "lestercrestbot"]:
-        return
-    embed = await item.get_embed(embed_template=lester.embed)
-    msg = await lester.get_channel(lc_config["comments_channel"]).send(embed=embed)
-    await item.add_reactions(msg)
-
-
-@lester.mail()
-async def handle_mail(item: RedditItem):
-    embed = await item.get_embed(embed_template=lester.embed)
-    msg = await lester.get_channel(lc_config["mail_channel"]).send(embed=embed)
-    await item.add_reactions(msg)
-
-
-@lester.reports()
-async def handle_reports(item: RedditItem):
-    embed = await item.get_embed(embed_template=lester.embed)
-    msg = await lester.get_channel(lc_config["reports_channel"]).send(embed=embed)
-    await item.add_reactions(msg)
+    @EventHandler.mod_actions()
+    async def handle_actions(self, item: RedditItem):
+        embed = await item.get_embed(embed_template=self.embed)
+        msg = await self.get_channel(lc_config["actions_channel"]).send(embed=embed)
+        await item.add_reactions(msg)
 
 
-@lester.mod_actions()
-async def handle_actions(item: RedditItem):
-    embed = await item.get_embed(embed_template=lester.embed)
-    msg = await lester.get_channel(lc_config["actions_channel"]).send(embed=embed)
-    await item.add_reactions(msg)
-
-
-config = configparser.ConfigParser()
-config.read("discord.ini")
-lester.run(config["LCB"]["token"])
+if __name__ == "__main__":
+    lester = LesterCrest()
+    config = configparser.ConfigParser()
+    config.read("discord.ini")
+    lester.run(config["LCB"]["token"])
