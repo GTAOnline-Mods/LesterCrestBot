@@ -7,8 +7,10 @@ from datetime import datetime
 import apraw
 import banhammer
 import discord
+from banhammer import Banhammer
 from banhammer.models import RedditItem, Subreddit
 from discord.ext import commands
+from discord.ext.commands import Bot
 
 from cmds import HelpCommand
 from config import config as lc_config
@@ -27,12 +29,12 @@ reddit = apraw.Reddit("LCB")
 gta_green = discord.Colour(0).from_rgb(207, 226, 206)
 
 
-class LesterCrest(commands.Bot, banhammer.Banhammer):
+class LesterCrest(Bot, Banhammer):
     def __init__(self, **options):
         super().__init__(lc_config["command_prefix"], help_command=HelpCommand(gta_green),
                          description="/r/gtaonline's moderation bot using Banhammer.py.", **options)
-        banhammer.Banhammer.__init__(self, reddit, bot=self, embed_color=gta_green,
-                                     change_presence=lc_config["change_presence"])
+        Banhammer.__init__(self, reddit, bot=self, embed_color=gta_green,
+                           change_presence=lc_config["change_presence"])
 
     async def on_command_error(self, ctx: commands.Context, error):
         if isinstance(error, discord.ext.commands.errors.CommandNotFound):
@@ -56,7 +58,7 @@ class LesterCrest(commands.Bot, banhammer.Banhammer):
             await message.edit(embed=embed)
             break
 
-        self.run()
+        Banhammer.start(self)
 
     async def on_message(self, message: discord.Message):
         if m.author.self:
@@ -78,7 +80,8 @@ class LesterCrest(commands.Bot, banhammer.Banhammer):
             return
 
         m = await c.fetch_message(payload.message_id)
-        e = payload.emoji.name if not payload.emoji.is_custom_emoji() else f"<:{payload.emoji.name}:{payload.emoji.id}>"
+        e = payload.emoji.name if not payload.emoji.is_custom_emoji(
+        ) else f"<:{payload.emoji.name}:{payload.emoji.id}>"
 
         item = await self.get_item(m.embeds[0] if m.embeds else m.content)
         if not item:
