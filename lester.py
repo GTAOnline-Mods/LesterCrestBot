@@ -61,7 +61,7 @@ class LesterCrest(Bot, Banhammer):
         Banhammer.start(self)
 
     async def on_message(self, message: discord.Message):
-        if m.author.self:
+        if message.author.self:
             return
 
         item = await self.get_item(message.content)
