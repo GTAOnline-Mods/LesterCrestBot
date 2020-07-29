@@ -40,7 +40,10 @@ class LesterCrest(Bot, Banhammer):
         if isinstance(error, discord.ext.commands.errors.CommandNotFound):
             pass
         else:
-            print(error)
+            print(f"Error in command: {e}")
+
+    async def on_handler_error(self, error):
+        print(f"Error in handler: {e}")
 
     async def on_ready(self):
         print(f"{self.user} is running.")
