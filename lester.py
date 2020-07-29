@@ -40,7 +40,7 @@ class LesterCrest(Bot, Banhammer):
         if isinstance(error, discord.ext.commands.errors.CommandNotFound):
             pass
         else:
-            print(f"Error in command: {e}")
+            print(f"Error in command: {error}")
 
     async def on_handler_error(self, error):
         print(f"Error in handler: {e}")
@@ -101,18 +101,6 @@ class LesterCrest(Bot, Banhammer):
         with open(lc_config["payloads_file"], "ab+") as f:
             pickle.dump(result.to_dict(), f)
 
-    @commands.command(help="Reload all the reactions for the subreddit configured and create a new info embed.")
-    async def reload(self, ctx: commands.Context):
-        await ctx.message.delete()
-
-        channel = self.get_channel(734713971428425729)
-        message = await channel.fetch_message(736613065889546321)
-        for sub in self.subreddits:
-            await sub.load_reactions()
-            embed = await sub.get_reactions_embed(embed_template=self.embed)
-            await message.edit(embed=embed)
-        await ctx.send("Reloaded all subreddit reactions!", delete_after=3)
-
     @property
     def embed(self):
         embed = discord.Embed(colour=gta_green)
@@ -153,8 +141,23 @@ class LesterCrest(Bot, Banhammer):
         await item.add_reactions(msg)
 
 
+bot = LesterCrest()
+
+
+@bot.command(help="Reload all the reactions for the subreddit configured and create a new info embed.")
+async def reload(ctx: commands.Context):
+    await ctx.message.delete()
+
+    channel = bot.get_channel(734713971428425729)
+    message = await channel.fetch_message(736613065889546321)
+    for sub in bot.subreddits:
+        await sub.load_reactions()
+        embed = await sub.get_reactions_embed(embed_template=bot.embed)
+        await message.edit(embed=embed)
+    await ctx.send("Reloaded all subreddit reactions!", delete_after=3)
+
+
 if __name__ == "__main__":
-    lester = LesterCrest()
     config = configparser.ConfigParser()
     config.read("discord.ini")
-    lester.run(config["LCB"]["token"])
+    bot.run(config["LCB"]["token"])
