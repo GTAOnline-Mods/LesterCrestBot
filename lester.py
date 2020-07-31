@@ -8,11 +8,11 @@ from datetime import datetime
 import apraw
 import banhammer
 import discord
-from discord.utils import escape_markdown
 from banhammer import Banhammer
 from banhammer.models import EventHandler, ItemAttribute, RedditItem, Subreddit
 from discord.ext import commands
 from discord.ext.commands import Bot
+from discord.utils import escape_markdown
 
 import stats
 from cmds import HelpCommand
@@ -38,6 +38,9 @@ class LesterCrest(Bot, Banhammer):
                          description="/r/gtaonline's moderation bot using Banhammer.py.", **options)
         Banhammer.__init__(self, reddit, bot=self, embed_color=gta_green,
                            change_presence=lc_config["change_presence"])
+
+        with open("assets/DirtyWords_en.txt") as f:
+            self.words = f.read().splitlines()
 
     async def on_command_error(self, ctx: commands.Context, error):
         if isinstance(error, discord.ext.commands.errors.CommandNotFound):
@@ -160,6 +163,10 @@ class LesterCrest(Bot, Banhammer):
         embed = await item.get_embed(embed_template=self.embed)
         msg = await self.get_channel(lc_config["comments_channel"]).send(embed=embed)
         await item.add_reactions(msg)
+
+        if any(word in item.item.body for word in self.words):
+            msg = await self.get_channel(lc_config["no_no_words_channel"]).send(embed=embed)
+            await item.add_reactions(msg)
 
     @EventHandler.mail()
     async def handle_mail(self, item: RedditItem):
