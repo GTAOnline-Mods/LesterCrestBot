@@ -8,6 +8,7 @@ from datetime import datetime
 import apraw
 import banhammer
 import discord
+from discord.utils import escape_markdown
 from banhammer import Banhammer
 from banhammer.models import EventHandler, ItemAttribute, RedditItem, Subreddit
 from discord.ext import commands
@@ -65,7 +66,7 @@ class LesterCrest(Bot, Banhammer):
 
         message = await channel.fetch_message(738713709869793291)
         embed = self.embed.set_author(name="Actions by Moderators")
-        lines = [f"{user}: {actions}" for user, actions in stats.get_actions_by_user().items()]
+        lines = [f"{escape_markdown(user)}: {actions}" for user, actions in stats.get_actions_by_user().items()]
         embed.description = "\n".join(lines)
         await message.edit(embed=embed)
 
