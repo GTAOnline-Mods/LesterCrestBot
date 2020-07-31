@@ -3,6 +3,7 @@ import configparser
 import logging
 import os
 import pickle
+import sys
 from datetime import datetime
 
 import apraw
@@ -13,6 +14,7 @@ from banhammer.models import EventHandler, ItemAttribute, RedditItem, Subreddit
 from discord.ext import commands
 from discord.ext.commands import Bot
 
+import stats
 from cmds import HelpCommand
 from config import config as lc_config
 from helpers import MessageBuilder
@@ -61,6 +63,13 @@ class LesterCrest(Bot, Banhammer):
             embed = await sub.get_reactions_embed(embed_template=self.embed)
             await message.edit(embed=embed)
             break
+
+        if "--stats" in sys.argv:
+            message = await channel.fetch_message(738713709869793291)
+            embed = self.embed.set_author(name="Actions by Moderators")
+            lines = [f"{user}: {actions}" for user, actions in stats.get_actions_by_user().items()]
+            embed.description = "\n".join(lines)
+            await message.edit(embed=embed)
 
         Banhammer.start(self)
 
