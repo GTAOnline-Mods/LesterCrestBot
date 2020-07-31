@@ -3,7 +3,6 @@ import configparser
 import logging
 import os
 import pickle
-import sys
 from datetime import datetime
 
 import apraw
@@ -64,12 +63,11 @@ class LesterCrest(Bot, Banhammer):
             await message.edit(embed=embed)
             break
 
-        if "--stats" in sys.argv:
-            message = await channel.fetch_message(738713709869793291)
-            embed = self.embed.set_author(name="Actions by Moderators")
-            lines = [f"{user}: {actions}" for user, actions in stats.get_actions_by_user().items()]
-            embed.description = "\n".join(lines)
-            await message.edit(embed=embed)
+        message = await channel.fetch_message(738713709869793291)
+        embed = self.embed.set_author(name="Actions by Moderators")
+        lines = [f"{user}: {actions}" for user, actions in stats.get_actions_by_user().items()]
+        embed.description = "\n".join(lines)
+        await message.edit(embed=embed)
 
         Banhammer.start(self)
 
