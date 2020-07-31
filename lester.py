@@ -116,10 +116,9 @@ class LesterCrest(Bot, Banhammer):
                 r = await self.wait_for("reaction_add",
                                         check=lambda _r, _u: _u.id == u.id and _r.message.id == msg.id,
                                         timeout=2 * 60)
-                check = not r[0].custom_emoji and r[0].emoji == "✔"
-                if check:
-                    await msg.delete()
-                else:
+                await msg.delete()
+
+                if r[0].emoji != "✔":
                     return
             except asyncio.exceptions.TimeoutError:
                 await u.send("❌ That took too long! You can restart the process by reacting to the item again.")
