@@ -104,7 +104,7 @@ class LesterCrest(Bot, Banhammer):
             msg = f"The submission by /u/{await item.get_author_name()} was already approved by /u/{item.item.approved_by}, are you sure you want to remove it?\n\n" \
                 f"{item.url}"
         elif getattr(item.item, "removed_by_category", None) == "moderator" and reaction.approve and item.item.removed_by.lower() != "automoderator":
-            msg = f"The submission by /u/{await item.get_author_name()} was already approved by /u/{item.item.removed_by}, are you sure you want to approve it?\n\n" \
+            msg = f"The submission by /u/{await item.get_author_name()} was already removed by /u/{item.item.removed_by}, are you sure you want to approve it?\n\n" \
                 f"{item.url}"
 
         if msg:
