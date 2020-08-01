@@ -113,9 +113,9 @@ class LesterCrest(Bot, Banhammer):
 
         msg = None
 
-        approved_by = escape_markdown(getattr(item.item, "approved_by", ""))
-        removed_by = escape_markdown(getattr(item.item, "removed_by", ""))
-        author_name = escape_markdown(await item.get_author_name())
+        approved_by = escape_markdown(str(getattr(item.item, "approved_by", "")))
+        removed_by = escape_markdown(str(getattr(item.item, "removed_by", "")))
+        author_name = escape_markdown(str(await item.get_author_name()))
 
         if approved_by and not reaction.approve and approved_by.lower() != "automoderator":
             msg = f"The submission by /u/{author_name} was already approved by /u/{approved_by}, are you sure you want to remove it?\n\n" \
