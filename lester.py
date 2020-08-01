@@ -3,6 +3,7 @@ import configparser
 import logging
 import os
 import pickle
+import re
 from datetime import datetime
 
 import apraw
@@ -41,6 +42,7 @@ class LesterCrest(Bot, Banhammer):
 
         with open("assets/DirtyWords_en.txt") as f:
             self.words = f.read().splitlines()
+            self.word_patterns = [re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE) for w in self.words]
 
     async def on_command_error(self, ctx: commands.Context, error):
         if isinstance(error, discord.ext.commands.errors.CommandNotFound):
@@ -164,7 +166,7 @@ class LesterCrest(Bot, Banhammer):
         msg = await self.get_channel(lc_config["comments_channel"]).send(embed=embed)
         await item.add_reactions(msg)
 
-        if any(word in item.item.body for word in self.words):
+        if any(pattern.search(item.body.lower()) for pattern in self.word_patterns):
             msg = await self.get_channel(lc_config["no_no_words_channel"]).send(embed=embed)
             await item.add_reactions(msg)
 
