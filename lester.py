@@ -51,7 +51,7 @@ class LesterCrest(Bot, Banhammer):
             print(f"Error in command: {error}")
 
     async def on_handler_error(self, error):
-        print(f"Error in handler: {e}")
+        print(f"Error in handler: {error}")
 
     async def on_ready(self):
         print(f"{self.user} is running.")
