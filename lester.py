@@ -4,6 +4,7 @@ import logging
 import os
 import pickle
 import re
+import time
 from datetime import datetime
 
 import apraw
@@ -71,7 +72,9 @@ class LesterCrest(Bot, Banhammer):
 
         message = await channel.fetch_message(738713709869793291)
         embed = self.embed.set_author(name="Actions by Moderators")
+        start_time = time.time()
         lines = [f"{escape_markdown(user)}: {actions}" for user, actions in stats.get_actions_by_user().items()]
+        print(f"Gathered stats, took {time.time() - start_time} seconds.")
         embed.description = "\n".join(lines)
         await message.edit(embed=embed)
 
