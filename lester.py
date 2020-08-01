@@ -37,7 +37,7 @@ class LesterCrest(Bot, Banhammer):
     def __init__(self, **options):
         super().__init__(lc_config["command_prefix"], help_command=HelpCommand(gta_green),
                          description="/r/gtaonline's moderation bot using Banhammer.py.", **options)
-        Banhammer.__init__(self, reddit, bot=self, embed_color=gta_green,
+        Banhammer.__init__(self, reddit, bot=self, embed_color=gta_green, message_builder=MessageBuilder(),
                            change_presence=lc_config["change_presence"])
 
         with open("assets/DirtyWords_en.txt") as f:
