@@ -112,12 +112,16 @@ class LesterCrest(Bot, Banhammer):
             return
 
         msg = None
-        if getattr(item.item, "approved_by",
-                   None) and not reaction.approve and item.item.approved_by.lower() != "automoderator":
-            msg = f"The submission by /u/{await item.get_author_name()} was already approved by /u/{item.item.approved_by}, are you sure you want to remove it?\n\n" \
+
+        approved_by = escape_markdown(getattr(item.item, "approved_by", ""))
+        removed_by = escape_markdown(getattr(item.item, "removed_by", ""))
+        author_name = escape_markdown(await item.get_author_name())
+
+        if approved_by and not reaction.approve and approved_by.lower() != "automoderator":
+            msg = f"The submission by /u/{author_name} was already approved by /u/{approved_by}, are you sure you want to remove it?\n\n" \
                 f"{item.url}"
-        elif getattr(item.item, "removed_by_category", None) == "moderator" and reaction.approve and item.item.removed_by.lower() != "automoderator":
-            msg = f"The submission by /u/{await item.get_author_name()} was already removed by /u/{item.item.removed_by}, are you sure you want to approve it?\n\n" \
+        elif removed_by and reaction.approve and removed_by.lower() != "automoderator":
+            msg = f"The submission by /u/{author_name} was already removed by /u/{removed_by}, are you sure you want to approve it?\n\n" \
                 f"{item.url}"
 
         if msg:
