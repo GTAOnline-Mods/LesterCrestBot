@@ -1,4 +1,7 @@
 import json
+import re
+import time
+import praw
 
 
 def write_words():
@@ -16,6 +19,20 @@ def write_words():
 if __name__ == "__main__":
     with open("assets/DirtyWords_en.txt") as f:
         words = f.read().splitlines()
-        texts = ["CausticPenguino is a butt LMFAO.", "Mods are gay.", "Badger is a motherfucking cocksucker."]
+        word_patterns = [re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE) for w in words]
+
+        reddit = praw.Reddit("LCB")
+        texts = [comment.body for comment in reddit.subreddit("gtaonline").comments(limit=None)]
+        print(f"{len(texts)} comments found.")
+
+        start_time = time.time()
+        matches = 0
         for text in texts:
-            print(text, any(word in text for word in words))
+            matches += 1 if any(f" {word} " in f" {text} " for word in words) else 0
+        print(f"{matches} matches, took {time.time() - start_time} seconds.")
+
+        start_time = time.time()
+        matches = 0
+        for text in texts:
+            matches += 1 if any(pattern.search(text) for pattern in word_patterns) else 0
+        print(f"{matches} matches, took {time.time() - start_time} seconds.")
