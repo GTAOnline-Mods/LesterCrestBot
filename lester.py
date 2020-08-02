@@ -165,9 +165,8 @@ class LesterCrest(Bot, Banhammer):
         await item.add_reactions(msg)
 
     @EventHandler.comments()
-    @EventHandler.filter(ItemAttribute.AUTHOR, "automoderator", "lestercrestbot", reverse=True)
+    @EventHandler.filter(ItemAttribute.AUTHOR, "automoderator", "lestercrestbot", "repostsleuthbot", reverse=True)
     async def handle_comments(self, item: RedditItem):
-        author_name = await item.get_author_name()
         embed = await item.get_embed(embed_template=self.embed)
         msg = await self.get_channel(lc_config["comments_channel"]).send(embed=embed)
         await item.add_reactions(msg)
@@ -175,6 +174,13 @@ class LesterCrest(Bot, Banhammer):
         if any(pattern.search(item.body.lower()) for pattern in self.word_patterns):
             msg = await self.get_channel(lc_config["no_no_words_channel"]).send(embed=embed)
             await item.add_reactions(msg)
+
+    @EventHandler.comments()
+    @EventHandler.filter(ItemAttribute.AUTHOR, "repostsleuthbot")
+    async def handle_comments(self, item: RedditItem):
+        embed = await item.get_embed(embed_template=self.embed)
+        msg = await self.get_channel(lc_config["reposts_channel"]).send(embed=embed)
+        await item.add_reactions(msg)
 
     @EventHandler.mail()
     async def handle_mail(self, item: RedditItem):
