@@ -201,23 +201,17 @@ class LesterCrest(Bot, Banhammer):
         await item.add_reactions(msg)
 
 
-bot = LesterCrest()
-
-
-@bot.command(help="Reload all the reactions for the subreddit configured and create a new info embed.")
-async def reload(ctx: commands.Context):
-    await ctx.message.delete()
-
-    channel = bot.get_channel(734713971428425729)
-    message = await channel.fetch_message(736613065889546321)
-    for sub in bot.subreddits:
-        await sub.load_reactions()
-        embed = await sub.get_reactions_embed(embed_template=bot.embed)
-        await message.edit(embed=embed)
-    await ctx.send("Reloaded all subreddit reactions!", delete_after=3)
+extensions = ["cogs.mod_cog"]
 
 
 if __name__ == "__main__":
+    bot = LesterCrest()
+
+    for extension in extensions:
+        bot.load_extension(extension)
+        print(f"{extension} loaded.")
+
     config = configparser.ConfigParser()
     config.read("discord.ini")
+
     bot.run(config["LCB"]["token"])
