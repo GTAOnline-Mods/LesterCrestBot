@@ -72,7 +72,7 @@ class LesterCrest(Bot, Banhammer):
             await message.edit(embed=embed)
             break
 
-        # Banhammer.start(self)
+        Banhammer.start(self)
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:
