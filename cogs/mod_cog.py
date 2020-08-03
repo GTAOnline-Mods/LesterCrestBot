@@ -51,7 +51,7 @@ class ModCog(commands.Cog):
 
         start_time = time.time()
         lines = [f"{escape_markdown(user)}: {actions}" for user, actions in self.bot.user_stats.items()]
-        print(f"Gathered stats, took {time.time() - start_time} seconds.")
+        # print(f"Gathered stats, took {time.time() - start_time} seconds.")
 
         embed.description = "\n".join(lines)
 
