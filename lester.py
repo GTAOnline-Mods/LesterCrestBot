@@ -4,7 +4,6 @@ import logging
 import os
 import pickle
 import re
-import time
 from datetime import datetime
 
 import apraw
@@ -45,6 +44,9 @@ class LesterCrest(Bot, Banhammer):
             self.words = f.read().splitlines()
             self.word_patterns = [re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE) for w in self.words]
 
+        self.user_stats = stats.get_actions_by_user()
+        self.stats_updated = True
+
     async def on_command_error(self, ctx: commands.Context, error):
         if isinstance(error, discord.ext.commands.errors.CommandNotFound):
             pass
@@ -70,15 +72,7 @@ class LesterCrest(Bot, Banhammer):
             await message.edit(embed=embed)
             break
 
-        message = await channel.fetch_message(738713709869793291)
-        embed = self.embed.set_author(name="Actions by Moderators")
-        start_time = time.time()
-        lines = [f"{escape_markdown(user)}: {actions}" for user, actions in stats.get_actions_by_user().items()]
-        print(f"Gathered stats, took {time.time() - start_time} seconds.")
-        embed.description = "\n".join(lines)
-        await message.edit(embed=embed)
-
-        Banhammer.start(self)
+        # Banhammer.start(self)
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:
@@ -147,6 +141,9 @@ class LesterCrest(Bot, Banhammer):
         channel = self.get_channel(lc_config["approved_channel"] if result.approved else lc_config["removed_channel"])
         await channel.send(embed=await result.get_embed(embed_template=self.embed))
         await m.delete()
+
+        self.stats_updated = True
+        self.user_stats[result.user] = self.user_stats.get(result.user, 0) + 1
 
         with open(lc_config["payloads_file"], "ab+") as f:
             pickle.dump(result.to_dict(), f)
