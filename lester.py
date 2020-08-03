@@ -174,7 +174,7 @@ class LesterCrest(Bot, Banhammer):
 
     @EventHandler.comments()
     @EventHandler.filter(ItemAttribute.AUTHOR, "repostsleuthbot")
-    async def handle_comments(self, item: RedditItem):
+    async def handle_reposts(self, item: RedditItem):
         embed = await item.get_embed(embed_template=self.embed)
         msg = await self.get_channel(lc_config["reposts_channel"]).send(embed=embed)
         await item.add_reactions(msg)
