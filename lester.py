@@ -138,6 +138,16 @@ class LesterCrest(Bot, Banhammer):
 
         result = await reaction.handle(item, user=u.nick)
 
+        if result.approved:
+            channel = self.get_channel(lc_config["approved_channel"])
+            message = await channel.send(embed=await result.get_embed(embed_template=self.embed))
+        elif any("banned" in action for action in result.actions):
+            channel = self.get_channel(lc_config["banned_channel"])
+            message = await channel.send(embed=await result.get_embed(embed_template=self.embed))
+        else:
+            channel = self.get_channel(lc_config["removed_channel"])
+            message = await channel.send(embed=await result.get_embed(embed_template=self.embed))
+
             for reaction in item.get_reactions():
                 if reaction.ban is not None:
                     await message.add_reaction(r.emoji)
