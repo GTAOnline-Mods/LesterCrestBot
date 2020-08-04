@@ -156,7 +156,7 @@ class LesterCrest(Bot, Banhammer):
 
             for reaction in item.get_reactions():
                 if reaction.ban is not None:
-                    await message.add_reaction(r.emoji)
+                    await message.add_reaction(reaction.emoji)
 
         self.stats_updated = True
         self.user_stats[result.user] = self.user_stats.get(result.user, 0) + 1
