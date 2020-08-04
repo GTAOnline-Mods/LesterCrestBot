@@ -118,10 +118,13 @@ class LesterCrest(Bot, Banhammer):
         author_name = escape_markdown(str(await item.get_author_name()))
 
         if reaction.reply:
-            if approved_by := getattr(item.item, "approved_by", "") and approved_by.lower() != "automoderator":
+            approved_by = getattr(item.item, "approved_by", "")
+            removed_by = getattr(item.item, "removed_by", "")
+
+            if approved_by and approved_by.lower() != "automoderator":
                 msg = f"The submission by /u/{author_name} was already approved by /u/{escape_markdown(approved_by)}, are you sure you want to remove it?\n\n" \
                     f"{item.url}"
-            elif removed_by := getattr(item.item, "removed_by", "") and removed_by.lower() != "automoderator":
+            elif removed_by and removed_by.lower() != "automoderator":
                 msg = f"The submission by /u/{author_name} was already removed by /u/{escape_markdown(removed_by)}, are you sure you want to approve it?\n\n" \
                     f"{item.url}"
 
