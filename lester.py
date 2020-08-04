@@ -192,29 +192,19 @@ class LesterCrest(Bot, Banhammer):
     @EventHandler.comments()
     @EventHandler.filter(ItemAttribute.AUTHOR, "repostsleuthbot")
     async def handle_reposts(self, item: RedditItem):
-        embed = await item.get_embed(embed_template=self.embed)
-
         try:
             submission = await item.item.submission()
         except Exception as e:
             print(f"Couldn't fetch comment's parent submission: {e}")
         else:
-            embed.add_field(name="Parent submission",
-                            value=f"[Submission](https://reddit.com{submission.permalink}) by /u/{submission._data['author']}")
+            submission_item = RedditItem(submission, item.subreddit, "reports")
+            embed = await submission_item.get_embed(embed_template=self.embed)
 
-            if submission.is_self:
-                embed.add_field(name="Body", value=item.body, inline=False)
-            elif "i.redd.it" in submission.url or any(submission.url.endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".gif")):
-                embed.set_image(url=submission.url)
-            elif not submission._data.get("poll_data", None):
-                embed.add_field(name="URL", value=escape_markdown(submission.url),
-                                inline=False)
-            else:
-                options = [f"◽ {escape_markdown(option['text'])}" for option in submission.poll_data["options"]]
-                embed.add_field(name="Poll", value="\n".join(options), inline=False)
+            embed.add_field(name="Comment by /u/RepostSleuthBot",
+                            value=f"{item.body}\n\n[Comment.]({item.url})")
 
-        msg = await self.get_channel(lc_config["reposts_channel"]).send(embed=embed)
-        await item.add_reactions(msg)
+            msg = await self.get_channel(lc_config["reposts_channel"]).send(embed=embed)
+            await item.add_reactions(msg)
 
     @EventHandler.mail()
     async def handle_mail(self, item: RedditItem):
