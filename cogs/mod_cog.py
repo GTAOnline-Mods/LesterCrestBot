@@ -50,8 +50,8 @@ class ModCog(commands.Cog):
         embed = self.bot.embed.set_author(name="Actions by Moderators")
 
         start_time = time.time()
-        lines = [f"{escape_markdown(user)}: {actions}" for user, actions in self.bot.user_stats.items()]
-        # print(f"Gathered stats, took {time.time() - start_time} seconds.")
+        user_stats = {k: v for k, v in sorted(self.bot.user_stats.items(), key=lambda item: item[1], reverse=True)}
+        lines = [f"{escape_markdown(user)}: {actions}" for user, actions in user_stats.items()]
 
         embed.description = "\n".join(lines)
 
