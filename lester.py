@@ -108,12 +108,6 @@ class LesterCrest(Bot, Banhammer):
         if not reaction:
             return
 
-        try:
-            await m.delete()
-        except Exception as e:
-            print(f"Failed to delete message: {e}")
-            return
-
         msg = None
         author_name = escape_markdown(str(await item.get_author_name()))
 
@@ -146,6 +140,12 @@ class LesterCrest(Bot, Banhammer):
                 return
 
         result = await reaction.handle(item, user=u.nick)
+
+        try:
+            await m.delete()
+        except Exception as e:
+            print(f"Failed to delete message: {e}")
+            return
 
         if result.approved:
             channel = self.get_channel(lc_config["approved_channel"])
