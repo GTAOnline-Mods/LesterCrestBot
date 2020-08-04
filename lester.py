@@ -108,6 +108,12 @@ class LesterCrest(Bot, Banhammer):
         if not reaction:
             return
 
+        try:
+            await m.delete()
+        except Exception as e:
+            print(f"Failed to delete message: {e}")
+            return
+
         msg = None
         author_name = escape_markdown(str(await item.get_author_name()))
 
@@ -151,8 +157,6 @@ class LesterCrest(Bot, Banhammer):
             for reaction in item.get_reactions():
                 if reaction.ban is not None:
                     await message.add_reaction(r.emoji)
-
-        await m.delete()
 
         self.stats_updated = True
         self.user_stats[result.user] = self.user_stats.get(result.user, 0) + 1
