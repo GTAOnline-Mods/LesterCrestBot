@@ -154,9 +154,10 @@ class LesterCrest(Bot, Banhammer):
             channel = self.get_channel(lc_config["removed_channel"])
             message = await channel.send(embed=await result.get_embed(embed_template=self.embed))
 
-            for reaction in item.get_reactions():
-                if reaction.ban is not None:
-                    await message.add_reaction(reaction.emoji)
+            if not await item.is_author_removed():
+                for reaction in item.get_reactions():
+                    if reaction.ban is not None:
+                        await message.add_reaction(reaction.emoji)
 
         self.stats_updated = True
         self.user_stats[result.user] = self.user_stats.get(result.user, 0) + 1
