@@ -196,7 +196,7 @@ class LesterCrest(Bot, Banhammer):
         try:
             submission = await item.item.submission()
         except Exception as e:
-            print(e)
+            print(f"Couldn't fetch comment's parent submission: {e}")
         else:
             embed.add_field(name="Parent submission",
                             value=f"[Submission](https://reddit.com{submission.permalink}) by /u/{submission._data['author']}")
