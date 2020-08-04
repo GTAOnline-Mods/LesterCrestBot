@@ -168,7 +168,7 @@ class LesterCrest(Bot, Banhammer):
     def embed(self):
         embed = discord.Embed(colour=gta_green)
         embed.set_footer(text="Lester Crest Bot", icon_url=self.user.avatar_url)
-        embed.timestamp = datetime.now()
+        embed.timestamp = datetime.utcnow()
         return embed
 
     @EventHandler.new()
