@@ -109,17 +109,17 @@ class LesterCrest(Bot, Banhammer):
             return
 
         msg = None
-        author_name = escape_markdown(str(await item.get_author_name()))
+        approved_by = getattr(item.item, "approved_by", "")
+        removed_by = getattr(item.item, "removed_by", "")
+        action_author = escape_markdown(approved_by or removed_by) if any((approved_by, removed_by)) else ""
 
-        if reaction.reply:
-            approved_by = getattr(item.item, "approved_by", "")
-            removed_by = getattr(item.item, "removed_by", "")
+        if action_author and action_author.lower() != "automoderator":
+            author_name = escape_markdown(str(await item.get_author_name()))
+            action_taken = "approved" if approved_by else "removed" if removed_by else ""
+            reaction_action = "reply to" if reaction.reply else "approve" if reaction.approve else "remove"
 
-            if approved_by and approved_by.lower() != "automoderator":
-                msg = f"The submission by /u/{author_name} was already approved by /u/{escape_markdown(approved_by)}, are you sure you want to remove it?\n\n" \
-                    f"{item.url}"
-            elif removed_by and removed_by.lower() != "automoderator":
-                msg = f"The submission by /u/{author_name} was already removed by /u/{escape_markdown(removed_by)}, are you sure you want to approve it?\n\n" \
+            if reaction.reply or (reaction.approve and removed_by) or (not reaction.approve and approved_by):
+                msg = f"The {item.type} by /u/{author_name} was already {action_taken} by /u/{action_author}, are you sure you want to {reaction_action} it?\n\n" \
                     f"{item.url}"
 
         if msg:
