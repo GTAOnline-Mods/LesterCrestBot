@@ -98,7 +98,12 @@ class LesterCrest(Bot, Banhammer):
         if not any(role.id == 734714209342062602 for role in u.roles):
             return
 
-        m = await c.fetch_message(payload.message_id)
+        try:
+            m = await c.fetch_message(payload.message_id)
+        except Exception as e:
+            print(f"Error fetching message: {e}")
+            return
+
         e = payload.emoji.is_custom_emoji() and f"<:{payload.emoji.name}:{payload.emoji.id}>" or payload.emoji.name
 
         item = await self.get_item(m.embeds[0] if m.embeds else m.content)
