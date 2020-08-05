@@ -45,7 +45,7 @@ class LesterCrest(Bot, Banhammer):
             self.word_patterns = [re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE) for w in self.words]
 
         self.action_stats = {
-            t: stats.split_actions_by_user(payloads) for t,
+            t: stats.get_users_action_count(stats.split_actions_by_user(payloads)) for t,
             payloads in stats.get_actions_by_type().items()}
         self.stats_updated = True
 
