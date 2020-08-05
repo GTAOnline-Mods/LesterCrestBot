@@ -51,7 +51,7 @@ class ModCog(commands.Cog):
 
         start_time = time.time()
         for t, users in self.bot.action_stats.items():
-            user_stats = {k: v for k, v in sorted(users, key=lambda item: item[1], reverse=True)}
+            user_stats = {k: v for k, v in sorted(users.items(), key=lambda item: item[1], reverse=True)}
             lines = [f"{escape_markdown(user)}: {actions}" for user, actions in user_stats.items()]
             embed.add_field(name=t.title(), value="\n".join(lines))
 
