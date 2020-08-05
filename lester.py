@@ -71,7 +71,10 @@ class LesterCrest(Bot, Banhammer):
 
         for sub in self.subreddits:
             embed = await sub.get_reactions_embed(embed_template=self.embed)
-            await message.edit(embed=embed)
+            try:
+                await message.edit(embed=embed)
+            except Exception as e:
+                print(f"Error setting subreddit reactions embed: {e}")
             break
 
         Banhammer.start(self)
