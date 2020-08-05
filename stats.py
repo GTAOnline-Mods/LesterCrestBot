@@ -44,8 +44,8 @@ def get_actions_by_type() -> Dict:
 
 def split_actions_by_type(payloads: Iterable[Dict[str, Any]]) -> Dict:
     types = {
-        "comments": list(),
-        "submissions": list()
+        "submissions": list(),
+        "comments": list()
     }
 
     for payload in payloads:
