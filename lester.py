@@ -44,7 +44,9 @@ class LesterCrest(Bot, Banhammer):
             self.words = f.read().splitlines()
             self.word_patterns = [re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE) for w in self.words]
 
-        self.user_stats = stats.get_actions_by_user()
+        self.action_stats = {
+            t: stats.split_actions_by_user(payloads) for t,
+            payloads in stats.get_actions_by_type().items()}
         self.stats_updated = True
 
     async def on_command_error(self, ctx: commands.Context, error):
@@ -162,8 +164,9 @@ class LesterCrest(Bot, Banhammer):
                     if reaction.ban is not None:
                         await message.add_reaction(reaction.emoji)
 
-        self.stats_updated = True
-        self.user_stats[result.user] = self.user_stats.get(result.user, 0) + 1
+        if item.type in ["submission", "comment"]:
+            self.stats_updated = True
+            self.action_stats[f"{item.type}s"] = self.action_stats[f"{item.type}s"].get(result.user, 0) + 1
 
         with open(lc_config["payloads_file"], "ab+") as f:
             pickle.dump(result.to_dict(), f)
