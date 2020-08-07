@@ -40,6 +40,10 @@ class LesterCrest(Bot, Banhammer):
         Banhammer.__init__(self, reddit, bot=self, embed_color=gta_green, message_builder=MessageBuilder(),
                            change_presence=lc_config["change_presence"])
 
+        self._new_ids = BoundedSet(301)
+        self._comment_ids = BoundedSet(301)
+        self._report_ids = BoundedSet(301)
+
         with open("assets/DirtyWords_en.txt") as f:
             self.words = f.read().splitlines()
             self.word_patterns = [re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE) for w in self.words]
@@ -189,6 +193,7 @@ class LesterCrest(Bot, Banhammer):
 
     @EventHandler.new()
     async def handle_new(self, item: RedditItem):
+        self._new_ids.add(item.item.id)
         embed = await item.get_embed(embed_template=self.embed)
         msg = await self.get_channel(lc_config["new_channel"]).send(embed=embed)
         await item.add_reactions(msg)
@@ -196,6 +201,7 @@ class LesterCrest(Bot, Banhammer):
     @EventHandler.comments()
     @EventHandler.filter(ItemAttribute.AUTHOR, "automoderator", "lestercrestbot", "repostsleuthbot", reverse=True)
     async def handle_comments(self, item: RedditItem):
+        self._comment_ids.add(item.item.id)
         embed = await item.get_embed(embed_template=self.embed)
         msg = await self.get_channel(lc_config["comments_channel"]).send(embed=embed)
         await item.add_reactions(msg)
@@ -207,6 +213,7 @@ class LesterCrest(Bot, Banhammer):
     @EventHandler.comments()
     @EventHandler.filter(ItemAttribute.AUTHOR, "repostsleuthbot")
     async def handle_reposts(self, item: RedditItem):
+        self._comment_ids.add(item.item.id)
         try:
             submission = await item.item.submission()
         except Exception as e:
@@ -229,8 +236,17 @@ class LesterCrest(Bot, Banhammer):
 
     @EventHandler.reports()
     async def handle_reports(self, item: RedditItem):
+        self._report_ids.add(item.item.id)
         embed = await item.get_embed(embed_template=self.embed)
         msg = await self.get_channel(lc_config["reports_channel"]).send(embed=embed)
+        await item.add_reactions(msg)
+
+    @EventHandler.queue()
+    async def handle_queue(self, item: RedditItem):
+        if any(item.item.id in ids for ids in (self._new_ids, self._comment_ids, self._report_ids)):
+            return
+        embed = await item.get_embed(embed_template=self.embed)
+        msg = await self.get_channel(lc_config["queue_channel"]).send(embed=embed)
         await item.add_reactions(msg)
 
     @EventHandler.mod_actions()
