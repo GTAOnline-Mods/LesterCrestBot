@@ -77,7 +77,7 @@ class LesterCrest(Bot, Banhammer):
                 print(f"Error setting subreddit reactions embed: {e}")
             break
 
-        Banhammer.start(self)
+        # Banhammer.start(self)
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:
