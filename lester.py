@@ -174,7 +174,8 @@ class LesterCrest(Bot, Banhammer):
 
         if item.type in ["submission", "comment"]:
             self.stats_updated = True
-            self.action_stats[f"{item.type}s"] = self.action_stats[f"{item.type}s"].get(result.user, 0) + 1
+            self.action_stats[f"{item.type}s"][result.user] = self.action_stats[f"{item.type}s"].get(
+                result.user, 0) + 1
 
         with open(lc_config["payloads_file"], "ab+") as f:
             pickle.dump(result.to_dict(), f)
