@@ -35,10 +35,6 @@ class ModCog(commands.Cog):
     async def update_stats(self):
         await self.bot.wait_until_ready()
 
-        last_expected = datetime.utcnow() - timedelta(minutes=5)
-        if self.stats_updated and self.stats_updated > last_expected:
-            return
-
         if not self.bot.stats_updated:
             return
 
@@ -55,7 +51,6 @@ class ModCog(commands.Cog):
             lines = [f"{escape_markdown(user)}: {actions}" for user, actions in user_stats.items()]
             embed.add_field(name=t.title(), value="\n".join(lines))
 
-        self.stats_updated = datetime.utcnow()
         await message.edit(embed=embed)
 
 
