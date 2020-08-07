@@ -9,6 +9,7 @@ from datetime import datetime
 import apraw
 import banhammer
 import discord
+from apraw.utils import BoundedSet
 from banhammer import Banhammer
 from banhammer.models import EventHandler, ItemAttribute, RedditItem, Subreddit
 from discord.ext import commands
