@@ -57,7 +57,7 @@ def split_actions_by_type(payloads: Iterable[Dict[str, Any]]) -> Dict:
                 types["submissions"].append(payload)
         else:
             if payload["item"]["type"] in ("submission", "comment"):
-                types[f"{item['item']['type']}s"].append(payload)
+                types[f"{payload['item']['type']}s"].append(payload)
 
     return types
 
