@@ -173,7 +173,7 @@ class LesterCrest(Bot, Banhammer):
             message = await channel.send(embed=await result.get_embed(embed_template=self.embed))
 
             if not await item.is_author_removed():
-                for reaction in item.get_reactions():
+                for reaction in item.reactions:
                     if reaction.ban is not None:
                         await message.add_reaction(reaction.emoji)
 
@@ -183,7 +183,7 @@ class LesterCrest(Bot, Banhammer):
                 result.user, 0) + 1
 
         with open(lc_config["payloads_file"], "ab+") as f:
-            pickle.dump(result.to_dict(), f)
+            pickle.dump(await result.to_dict(), f)
 
     @property
     def embed(self):

@@ -49,11 +49,15 @@ def split_actions_by_type(payloads: Iterable[Dict[str, Any]]) -> Dict:
     }
 
     for payload in payloads:
-        match = POST_URL_PATTERN.search(payload["item"])
-        if match and match.group("comment"):
-            types["comments"].append(payload)
-        elif match:
-            types["submissions"].append(payload)
+        if isinstance(payload["item"], str):
+            match = POST_URL_PATTERN.search(payload["item"])
+            if match and match.group("comment"):
+                types["comments"].append(payload)
+            elif match:
+                types["submissions"].append(payload)
+        else:
+            if payload["item"]["type"] in ("submission", "comment"):
+                types[f"{item['item']['type']}s"].append(payload)
 
     return types
 
