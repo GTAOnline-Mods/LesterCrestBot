@@ -78,10 +78,10 @@ class ModCog(commands.Cog):
         msgs = [msg async for msg in user.inbox() if msg.id not in self._msg_ids]
 
         for msg in reversed(msgs):
+            self._msg_ids.add(msg.id)
+            
             if self._skip_msgs:
                 continue
-
-            self._msg_ids.add(msg.id)
 
             if msg.was_comment:
                 comment = await self.bot.reddit.comment(msg.id)
