@@ -227,7 +227,7 @@ class LesterCrest(Bot, Banhammer):
                             value=f"{item.body}\n\n[Comment.]({item.url})")
 
             msg = await self.get_channel(lc_config["reposts_channel"]).send(embed=embed)
-            await item.add_reactions(msg)
+            await submission_item.add_reactions(msg)
 
     @EventHandler.mail()
     async def handle_mail(self, item: RedditItem):
