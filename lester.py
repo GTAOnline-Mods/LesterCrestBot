@@ -33,11 +33,15 @@ logger.addHandler(fileHandle)
 reddit = apraw.Reddit("LCB")
 gta_green = discord.Colour(0).from_rgb(207, 226, 206)
 
+intents = discord.Intents.default()
+intents.members = True
+
 
 class LesterCrest(Bot, Banhammer):
     def __init__(self, **options):
         super().__init__(lc_config["command_prefix"], help_command=HelpCommand(gta_green),
-                         description="/r/gtaonline's moderation bot using Banhammer.py.", **options)
+                         description="/r/gtaonline's moderation bot using Banhammer.py.", intents=intents,
+                         **options)
         Banhammer.__init__(self, reddit, bot=self, embed_color=gta_green, message_builder=MessageBuilder(),
                            change_presence=lc_config["change_presence"])
 
@@ -100,7 +104,7 @@ class LesterCrest(Bot, Banhammer):
         if not isinstance(c, discord.TextChannel):
             return
 
-        u = c.guild.get_member(payload.user_id)
+        u = c.guild.get_member(int(payload.user_id))
         if u.bot:
             return
         if not any(role.id == 734714209342062602 for role in u.roles):
