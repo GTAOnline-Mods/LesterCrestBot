@@ -1,6 +1,6 @@
 import pickle
 import re
-from typing import Any, Dict, List, Generator, Iterable
+from typing import Any, Dict, Generator, Iterable
 
 from config import config
 

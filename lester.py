@@ -7,7 +7,6 @@ import re
 from datetime import datetime
 
 import apraw
-import banhammer
 import discord
 from apraw.utils import BoundedSet
 from banhammer import Banhammer
@@ -16,6 +15,7 @@ from discord.ext import commands
 from discord.ext.commands import Bot
 from discord.utils import escape_markdown
 
+import firebase
 import stats
 from cmds import HelpCommand
 from config import config as lc_config
@@ -186,8 +186,10 @@ class LesterCrest(Bot, Banhammer):
             self.action_stats[f"{item.type}s"][result.user] = self.action_stats[f"{item.type}s"].get(
                 result.user, 0) + 1
 
+        d = await result.to_dict()
         with open(lc_config["payloads_file"], "ab+") as f:
-            pickle.dump(await result.to_dict(), f)
+            pickle.dump(d, f)
+        firebase.db.collection("mod_actions").add(d)
 
     @property
     def embed(self):
